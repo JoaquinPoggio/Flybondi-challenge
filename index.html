@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flybondi challenger</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header>
+      <img
+        src="https://flybondi.com/assets/images/logo.svg"
+        height="50"
+        alt="Flybondi Logo"
+      />
+    </header>
+
+    <main>
+      <section class="search-box">
+        <div class="field">
+          <select id="origin">
+            <option value="">Ciudad de origen</option>
+            <option value="BUE">Buenos Aires (BUE)</option>
+            <option value="COR">Córdoba (COR)</option>
+            <option value="MDZ">Mendoza (MDZ)</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <select id="destination">
+            <option value="">Ciudad o aeropuerto</option>
+            <option value="BRC">Bariloche (BRC)</option>
+            <option value="COR">Córdoba (COR)</option>
+            <option value="MDZ">Mendoza (MDZ)</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <input
+            type="number"
+            id="budget"
+            value="800"
+            min="0"
+            placeholder="Presupuesto máximo"
+          />
+        </div>
+
+        <button id="searchBtn" class="btn-search">Buscar vuelos</button>
+      </section>
+
+      <section class="controls-box">
+        <label>Ordenar:</label>
+        <select id="sort">
+          <option value="price">Precio (menor)</option>
+          <option value="date">Fecha (más cercana)</option>
+          <option value="availability">Disponibilidad (mayor)</option>
+        </select>
+
+        <label>Agrupar:</label>
+        <select id="groupBy">
+          <option value="none">Sin agrupar</option>
+          <option value="destination">Por destino</option>
+          <option value="date">Por fecha</option>
+        </select>
+      </section>
+
+      <section id="results"></section>
+    </main>
+
+    <footer>
+     <img
+        src="https://flybondi.com/assets/images/logo.svg"
+        height="20"
+        alt="Flybondi Logo"
+      />
+    </head
+      <p>&copy; 2025 Flybondi. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
