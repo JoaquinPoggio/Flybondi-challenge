@@ -56,7 +56,7 @@ function search() {
 
   if (flights.length === 0) {
     results.textContent =
-      "No se encontraron vuelos dentro de tu presupuesto 😢";
+      "No se encontraron vuelos dentro de tu presupuesto";
     return;
   }
 
@@ -108,6 +108,7 @@ function createFlightCard(flight) {
 document.getElementById("searchBtn").addEventListener("click", search);
 document.getElementById("sort").addEventListener("change", search);
 document.getElementById("groupBy").addEventListener("change", search);
+
 
 
 
