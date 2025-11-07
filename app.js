@@ -82,7 +82,7 @@ function search() {
   );
   if (flights.length === 0) {
     resultsDiv.textContent =
-      "No se encontraron vuelos dentro de tu presupuesto 😢";
+      "No se encontraron vuelos dentro de tu presupuesto";
     return;
   }
 
@@ -140,3 +140,4 @@ function search() {
 document.getElementById("origin").addEventListener("change", search);
 document.getElementById("budget").addEventListener("input", search);
 document.getElementById("searchBtn").addEventListener("click", search);
+
