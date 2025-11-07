@@ -1,118 +1,113 @@
 let dataset = [];
 
-// Cargar el archivo JSON con los vuelos
+//cargar el archivo dataset.json
 fetch("dataset.json")
-  .then(function (res) {
-    return res.json();
-  })
-  .then(function (data) {
+  .then((res) => res.json())
+  .then((data) => {
     dataset = data;
-    mostrarOrígenes();
+    console.log("Datos cargados:", dataset);
   })
-  .catch(function (error) {
-    console.error("No se pudo cargar dataset.json", error);
-    // Si no existe el JSON, usa algunos datos de prueba
+  .catch((err) => {
+    console.warn("No se pudo cargar dataset.json. Se usan datos de ejemplo.");
+    //por si no carga el json
     dataset = [
       {
-        date: "2025-08-15",
+        date: "2025-08-15T00:02:00.000Z",
         origin: "COR",
         destination: "MDZ",
         price: 474.05,
         availability: 9,
       },
       {
-        date: "2025-08-14",
+        date: "2025-08-14T23:33:00.000Z",
         origin: "COR",
         destination: "BRC",
         price: 197.68,
         availability: 2,
       },
       {
-        date: "2025-08-15",
+        date: "2025-08-15T13:51:00.000Z",
         origin: "EPA",
         destination: "BRC",
         price: 300.3,
         availability: 1,
       },
     ];
-    mostrarOrígenes();
   });
 
-// Mostrar los origenes unicos
-function mostrarOrígenes() {
-  const selectOrigen = document.getElementById("origin");
-  selectOrigen.innerHTML = "<option value=''>Seleccioná origen</option>";
+// Muestra los vuelos según lo que el usuario elija
+function search() {
+  const origin = document.getElementById("origin").value;
+  const destination = document.getElementById("destination").value;
+  const budget = parseFloat(document.getElementById("budget").value) || 0;
+  const sortBy = document.getElementById("sort").value;
+  const groupBy = document.getElementById("groupBy").value;
+  const results = document.getElementById("results");
 
-  // sacar los origenes
-  const origenes = [];
-  for (let i = 0; i < dataset.length; i++) {
-    if (!origenes.includes(dataset[i].origin)) {
-      origenes.push(dataset[i].origin);
+  results.innerHTML = "";
+
+  // Filtrar vuelos origen, destino y presupuesto
+  let flights = dataset.filter((f) => {
+    const matchesOrigin = !origin || f.origin === origin;
+    const matchesDestination = !destination || f.destination === destination;
+    const withinBudget = f.price * 2 <= budget;
+    return matchesOrigin && matchesDestination && withinBudget;
+  });
+
+  if (flights.length === 0) {
+    results.textContent =
+      "No se encontraron vuelos dentro de tu presupuesto 😢";
+    return;
+  }
+
+  // Ordenar
+  flights.sort((a, b) => {
+    if (sortBy === "price") return a.price - b.price;
+    if (sortBy === "date") return new Date(a.date) - new Date(b.date);
+    if (sortBy === "availability") return b.availability - a.availability;
+  });
+
+  if (groupBy === "none") {
+    flights.forEach((f) => results.appendChild(createFlightCard(f)));
+  } else {
+    const groups = {};
+
+    flights.forEach((f) => {
+      const key =
+        groupBy === "date" ? new Date(f.date).toLocaleDateString() : f[groupBy];
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(f);
+    });
+
+    // Mostrar cada grupo
+    for (const key in groups) {
+      const title = document.createElement("h3");
+      title.textContent = key;
+      results.appendChild(title);
+
+      groups[key].forEach((f) => results.appendChild(createFlightCard(f)));
     }
   }
-
-  // agregar cada origen
-  for (let i = 0; i < origenes.length; i++) {
-    const opcion = document.createElement("option");
-    opcion.value = origenes[i];
-    opcion.textContent = origenes[i];
-    selectOrigen.appendChild(opcion);
-  }
 }
 
-// busca vuelos dentro del presupuesto
-function buscarVuelos() {
-  const origen = document.getElementById("origin").value;
-  const presupuesto = parseFloat(document.getElementById("budget").value) || 0;
-  const resultados = document.getElementById("results");
-  resultados.innerHTML = "";
-
-  if (!origen) {
-    resultados.textContent = "Por favor seleccioná un origen";
-    return;
-  }
-
-  // filtra los vuelos por origen y presupuesto
-  const vuelos = dataset.filter(function (v) {
-    return v.origin === origen && v.price * 2 <= presupuesto;
-  });
-
-  if (vuelos.length === 0) {
-    resultados.textContent =
-      "No se encontraron vuelos dentro de tu presupuesto";
-    return;
-  }
-
-  // mostrar los vuelos encontrados
-  for (let i = 0; i < vuelos.length; i++) {
-    const vuelo = vuelos[i];
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML =
-      "<h4>" +
-      vuelo.origin +
-      " → " +
-      vuelo.destination +
-      "</h4>" +
-      "<p>Precio ida y vuelta: $" +
-      (vuelo.price * 2).toFixed(2) +
-      "</p>" +
-      "<p>Disponibilidad: " +
-      vuelo.availability +
-      "</p>" +
-      "<p>Fecha: " +
-      new Date(vuelo.date).toLocaleDateString() +
-      "</p>";
-    resultados.appendChild(div);
-  }
+//tarjeta visual para cada vuelo
+function createFlightCard(flight) {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `
+    <h4>${flight.origin} → ${flight.destination}</h4>
+    <p>Precio ida y vuelta: <strong>$${(flight.price * 2).toFixed(
+      2
+    )}</strong></p>
+    <p>Disponibilidad: ${flight.availability}</p>
+    <p>Fecha: ${new Date(flight.date).toLocaleDateString()}</p>
+  `;
+  return card;
 }
 
-document.getElementById("searchBtn").addEventListener("click", buscarVuelos);
-document.getElementById("budget").addEventListener("input", buscarVuelos);
-document.getElementById("origin").addEventListener("change", buscarVuelos);
-
-document.getElementById("origin").addEventListener("change", search);
-document.getElementById("budget").addEventListener("input", search);
 document.getElementById("searchBtn").addEventListener("click", search);
+document.getElementById("sort").addEventListener("change", search);
+document.getElementById("groupBy").addEventListener("change", search);
+
 
 
